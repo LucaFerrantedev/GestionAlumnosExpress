@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------
+  # Servicio de la API Node.js (Express)
+  # ----------------------------------------
+  app:
+    build: .
+    # Carga automáticamente las variables de entorno del archivo .env
+    # Se inyectarán DB_USER, DB_PASSWORD, JWT_SECRET, etc.
+    ports:
+      - "${APP_PORT}:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules 
+    depends_on:
+      - db
+    environment:
+      # Sólo se definen variables no sensibles o valores fijos
+      DB_HOST: db # host interno de Docker (no sensible)
+      PORT: 3000
+    restart: always
+
+  # ----------------------------------------
+  # Servicio de la Base de Datos MySQL
+  # ----------------------------------------
+  db:
+    image: mysql:8.0
+    ports:
+      - "${DB_PORT}:3306"
+    environment:
+      # Las variables se leen del archivo .env
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    volumes:
+      # El dump de la DB (el contenido del archivo no es un secreto, es la estructura inicial)
+      - ./gestion_alumnos.sql:/docker-entrypoint-initdb.d/gestion_alumnos.sql
+      - db_data:/var/lib/mysql
+    restart: always
+
+  # ----------------------------------------
+  # Servicio de phpMyAdmin para interfaz visual
+  # ----------------------------------------
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "${PHPMYADMIN_PORT}:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      # Usa la contraseña de root, que se obtiene de .env
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    depends_on:
+      - db
+    restart: always
+
+volumes:
+  db_data:

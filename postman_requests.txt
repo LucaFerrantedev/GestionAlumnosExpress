@@ -1,0 +1,37 @@
+api/login
+{
+  "usuario": "admin",
+  "contrasena": "123456"
+}
+
+api/alumnos (crear usuario)
+{
+  "nombre": "Sofía López",
+  "mail": "sofia@alumno.com",
+  "usuario": "sofialopez",
+  "contrasena": "123456"
+}
+
+/api/materias
+{
+
+  "nombre": "Bases de Datos II",
+
+  "carrera_id": 1
+
+}
+
+/api/inscripciones
+{
+  "alumno_id": 8,
+  "materia_id": 11
+}
+
+
+ver materias de sofia
+/api/alumnos/8/materias
+
+ 
+ver alumnos de la materia
+/api/materias/11/alumnos
+ 

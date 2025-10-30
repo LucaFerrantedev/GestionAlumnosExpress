@@ -1,9 +1,13 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const cors = require('cors'); // ✨ NUEVO: Importar el módulo CORS
 const app = express();
 
 // maneja variables de entorno
 dotenv.config();
+
+// Habilitar CORS para TODAS las peticiones
+app.use(cors()); 
 
 app.use(express.json());
 

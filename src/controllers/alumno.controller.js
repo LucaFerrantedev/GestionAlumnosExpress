@@ -130,6 +130,43 @@ const eliminarAlumnoController = async (req, res) => {
   }
 };
 
-module.exports = { listarAlumnos, verAlumnoPorId, crearAlumnoController,editarAlumnoController, eliminarAlumnoController };
-// Este controlador maneja la lógica para listar alumnos
-// y verifica los permisos del usuario autenticado.
+const reactivarAlumnoController = async (req, res) => {
+  const { id } = req.params;
+  const usuarioToken = req.usuario;
+
+  try {
+    const alumno = await obtenerAlumnoPorId(id);
+
+    if (!alumno) {
+      return res.status(404).json({ msg: 'Alumno no encontrado' });
+    }
+
+    if (alumno.fecha_baja === null) {
+      return res.status(400).json({ msg: 'El alumno ya está activo' });
+    }
+
+    if (usuarioToken.rol !== 1) {
+      return res.status(403).json({ msg: 'Solo un administrador puede reactivar un alumno' });
+    }
+
+    const actualizado = await reactivarAlumno(id);
+    
+    if (!actualizado) {
+      return res.status(500).json({ msg: 'No se pudo reactivar el alumno' });
+    }
+
+    res.json({ msg: 'Alumno reactivado correctamente' });
+  } catch (error) {
+    console.error('Error al reactivar alumno:', error);
+    res.status(500).json({ msg: 'Error al reactivar alumno', error: error.message });
+  }
+};
+
+module.exports = { 
+  listarAlumnos, 
+  verAlumnoPorId, 
+  crearAlumnoController,
+  editarAlumnoController, 
+  eliminarAlumnoController,
+  reactivarAlumnoController 
+};

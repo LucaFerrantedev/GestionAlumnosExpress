@@ -1,7 +1,10 @@
 const express = require('express');
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger_output.json');
 const dotenv = require('dotenv');
-const cors = require('cors'); // ✨ NUEVO: Importar el módulo CORS
+const cors = require('cors');
 const app = express();
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // maneja variables de entorno
 dotenv.config();

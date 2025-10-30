@@ -61,22 +61,15 @@ async function bajaLogicaAlumno(id, usuario_baja) {
   await db.query(query, [usuario_baja, id]);
 }
 
-async function reactivarAlumno(id) {
+// Reactiva al alumno
+async function reactivarAlumno(id, usuario_modificacion) {
   const query = `
     UPDATE usuarios
-    SET fecha_baja = null,
-        usuario_baja = null
+    SET fecha_baja = NULL, usuario_baja = NULL, fecha_modificacion = NOW(), usuario_modificacion = ?
     WHERE id = ? AND rol_id = 3
   `;
-  const [result] = await db.query(query, [id]);
-  return result.affectedRows > 0;
+  await db.query(query, [usuario_modificacion, id]);
 }
 
-module.exports = { 
-  obtenerAlumnos, 
-  obtenerAlumnoPorId, 
-  crearAlumno, 
-  editarAlumno,
-  bajaLogicaAlumno,
-  reactivarAlumno 
-};
+
+module.exports = { obtenerAlumnos, obtenerAlumnoPorId, crearAlumno, editarAlumno, bajaLogicaAlumno, reactivarAlumno };

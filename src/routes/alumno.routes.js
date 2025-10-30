@@ -1,12 +1,5 @@
 const express = require('express');
-const { 
-  listarAlumnos, 
-  verAlumnoPorId, 
-  crearAlumnoController, 
-  editarAlumnoController,
-  eliminarAlumnoController,
-  reactivarAlumnoController 
-} = require('../controllers/alumno.controller');
+const { listarAlumnos, verAlumnoPorId, crearAlumnoController, editarAlumnoController,eliminarAlumnoController, reactivarAlumnoController } = require('../controllers/alumno.controller');
 const { verificarToken, verificarRol } = require('../middlewares/auth.middleware');
 
 const router = express.Router();
@@ -28,8 +21,8 @@ router.delete('/alumnos/:id', verificarToken, verificarRol(1),
   eliminarAlumnoController
 );
 
-// Solo admin puede reactivar alumnos
-router.patch('/alumnos/:id/reactivar', verificarToken, verificarRol(1),
+// Reactivar Alumno
+router.put('/alumnos/:id/reactivar', verificarToken, verificarRol(1),
   reactivarAlumnoController
 );
 

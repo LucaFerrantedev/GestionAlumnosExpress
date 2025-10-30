@@ -1,12 +1,10 @@
-// start.js
 const importedOpen = require('open');
-// ✨ CORRECCIÓN: Asigna la función de apertura, comprobando si está en .default o directamente.
 const openBrowser = importedOpen.default || importedOpen; 
 
 const { spawn } = require('child_process');
 
 const serverURL = 'http://localhost:3000/api-docs';
-const delayTime = 5000; // 5 segundos de espera
+const delayTime = 5000;
 
 console.log('Iniciando servidor con nodemon...');
 
@@ -25,8 +23,7 @@ setTimeout(() => {
     console.log(`\nEl servidor debería estar corriendo en el puerto 3000.`);
     console.log(`Abriendo la documentación de Swagger en: ${serverURL}`);
     
-    // Llamamos a la función ya corregida
-    openBrowser(serverURL); 
+    openBrowser(serverURL);
     
 }, delayTime); 
 

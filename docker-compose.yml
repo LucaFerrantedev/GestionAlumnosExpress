@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # ------------------------------------
+  # 1. Base de Datos (MySQL)
+  # ------------------------------------
+  db:
+    image: mysql:8.0
+    container_name: gestion-db
+    environment:
+      # Variables para el usuario ROOT
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} 
+      # Variables para la aplicación (ASUME que DB_USER NO es 'root')
+      MYSQL_DATABASE: ${DB_DATABASE} 
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      # Carga el dump al iniciar la DB
+      - ./gestion_alumnos_backup.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - db_data:/var/lib/mysql
+    ports:
+      # Mapeo corregido para evitar conflicto con MySQL local
+      - "3307:3306" 
+    restart: always
+    
+    # 🌟 HEALTHCHECK para que el backend espere
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  # ------------------------------------
+  # 2. Backend (Node.js/Express API)
+  # ------------------------------------
+  backend:
+    build: 
+      context: . # Usa el Dockerfile en esta carpeta
+    container_name: gestion-backend
+    # Espera a que la DB esté completamente lista y Healthy
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # El backend se conecta usando el nombre de servicio 'db'
+      DB_HOST: db 
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      JWT_SECRET: ${JWT_SECRET}
+      APP_PORT: ${APP_PORT}
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  # ------------------------------------
+  # 3. Frontend (React)
+  # ------------------------------------
+  frontend:
+    image: node:20-alpine
+    container_name: gestion-frontend
+    build:
+      # **Asegúrate de que esta ruta sea correcta**
+      context: ../gestion-alumnos-frontend
+      dockerfile: dockerfile.frontend 
+    depends_on:
+      - backend
+    environment:
+      # El frontend llama al backend en el puerto 3000 del Host
+      REACT_APP_API_BASE_URL: http://localhost:3000/api 
+    ports:
+      - "3001:3000" 
+    command: npm start
+
+  # ------------------------------------
+  # 4. PhpMyAdmin
+  # ------------------------------------
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: gestion-phpmyadmin
+    depends_on:
+      db:
+        condition: service_healthy # Espera a que la DB esté Healthy
+    environment:
+      PMA_HOST: db # Se conecta usando el nombre interno del servicio de DB
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8080:80"
+    restart: always
+
+volumes:
+  db_data:

@@ -6,17 +6,15 @@ const cors = require('cors');
 const app = express();
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
-// maneja variables de entorno
 dotenv.config();
 
-// Habilitar CORS para TODAS las peticiones
 app.use(cors()); 
 
 app.use(express.json());
 
 // Ruta para probar la API
 app.get('/', (req, res) => {
-  res.send('API Gestión de Alumnos funca');
+  res.send('API Gestión de Alumnos está funcionando');
 });
 
 // Levanta el srv express en port 3000

@@ -1,3 +1,4 @@
+// Este middleware verifica el token JWT y el rol del usuario
 const jwt = require('jsonwebtoken');
 
 const verificarToken = (req, res, next) => {
@@ -11,7 +12,7 @@ const verificarToken = (req, res, next) => {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.usuario = payload; // Lo guardamos para usar en la ruta
+    req.usuario = payload;
     next();
   } catch (err) {
     console.error(err);
@@ -32,7 +33,3 @@ const verificarRol = (...rolesPermitidos) => {
 };
 
 module.exports = { verificarToken, verificarRol };
-// Este middleware verifica el token JWT y el rol del usuario
-// Puedes usarlo en tus rutas de la siguiente manera:
-// const { verificarToken, verificarRol } = require('./middlewares/auth.middleware');
-// app.get('/ruta-protegida', verificarToken, verificarRol('admin', 'user'), (req, res) => {

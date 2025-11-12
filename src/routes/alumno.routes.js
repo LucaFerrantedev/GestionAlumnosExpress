@@ -9,11 +9,12 @@ router.get('/alumnos', verificarToken, verificarRol(1, 2, 3), listarAlumnos);
 
 router.get('/alumnos/:id', verificarToken, verificarRol(1, 2, 3), verAlumnoPorId);
 
-router.post('/alumnos', verificarToken, verificarRol(1), // Solo admin
+// Solo admin puede crear alumnos
+router.post('/alumnos', verificarToken, verificarRol(1),
   crearAlumnoController
 );
 
-router.put('/alumnos/:id', verificarToken, verificarRol(1, 2, 3), // permitimos que el middleware pase, y el control fino lo hace el controller
+router.put('/alumnos/:id', verificarToken, verificarRol(1, 3),
   editarAlumnoController
 );
 

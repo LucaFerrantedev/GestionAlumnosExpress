@@ -16,5 +16,3 @@ async function crearUsuario(data) {
   await db.query(query, [nombre, mail, usuario, contrasenaEncriptada, rol_id, usuario_alta]);
 }
 module.exports = { buscarPorUsuario, crearUsuario };
-
-//

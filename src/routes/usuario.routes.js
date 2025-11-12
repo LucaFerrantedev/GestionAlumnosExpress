@@ -5,6 +5,6 @@ const { verificarToken, verificarRol } = require('../middlewares/auth.middleware
 
 const router = express.Router();
 
-// Solo ADMIN (rol_id === 1) puede registrar usuarios
+// Solo ADMIN puede registrar usuarios
 router.post('/usuarios', verificarToken, verificarRol(1), registrarUsuario);
 module.exports = router;
